@@ -1,0 +1,171 @@
+@extends('layouts.app')
+
+@section('title', 'Ubah Murid')
+
+@push('style')
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="{{ asset('library/summernote/dist/summernote-bs4.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/codemirror/theme/duotone-dark.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
+@endpush
+
+@section('main')
+    <div class="main-content">
+        <section class="section">
+            <div class="section-header">
+                <h1>{{ __('Ubah Murid') }}</h1>
+                <div class="section-header-breadcrumb">
+                    <div class="breadcrumb-item active"><a href="#">{{ __('Dashboard') }}</a></div>
+                    <div class="breadcrumb-item"><a href="#">{{ __('Murid') }}</a></div>
+                    <div class="breadcrumb-item">{{ __('Ubah Murid') }}</div>
+                </div>
+            </div>
+
+            <div class="section-body">
+
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>{{ __('Formulir Ubah Murid') }}</h4>
+                            </div>
+                            <form class="form" action="/admin/manage-student/{{ Request::segment(3) }}" method="post"
+                                enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="card-body">
+                                    <div class="form-group row mb-4">
+                                        <label
+                                            class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{{ __('Nama
+                                                                                                                                                                                                                                                                                                                                                                Lengkap') }}</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <input type="text" class="form-control" name="nama_lengkap"
+                                                value="{{ $murid->nama_lengkap }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-4">
+                                        <label
+                                            class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{{ __('Email') }}</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <input type="email" class="form-control" name="email"
+                                                value="{{ $murid->email }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-4">
+                                        <label
+                                            class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{{ __('Kata
+                                                                                                                                                                                                                                                                                                                                                                Sandi') }}</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" name="password" id="password"
+                                                    value="{{ $murid->password }}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="togglePassword"
+                                                        style="cursor:pointer;">
+                                                        <i class="fa fa-eye" id="togglePasswordIcon"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-4">
+                                        <label
+                                            class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{{ __('Nomor
+                                                                                                                                                                                                                                                                                                                                                                Induk') }}</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <input type="number" min="0" class="form-control" name="nomor_induk"
+                                                value="{{ $murid->nomor_induk }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-4">
+                                        <label
+                                            class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{{ __('Kelas') }}</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <select name="class_id" class="form-control selectric">
+                                                <option value="">-- Pilih Kelas --</option>
+                                                @foreach ($classes as $c)
+                                                    <option value="{{ $c->id }}"
+                                                        {{ $murid->class_id == $c->id ? 'selected' : '' }}>
+                                                        {{ $c->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-4">
+                                        <label
+                                            class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{{ __('Alamat') }}</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <textarea class="form-control" name="alamat">{{ old('alamat', trim($murid->alamat ?? '')) }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mb-4">
+                                        <label
+                                            class="col-form-label text-md-right col-12 col-md-3 col-lg-3">{{ __('Foto
+                                                                                                                                                                                                                                                                                                                                                                Profil') }}</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <div id="image-preview" class="image-preview"
+                                                style="background-image: url('{{ asset('img/murid/' . $murid->gambar) }}') ; background-size: cover;
+                                                background-position: center center;">
+                                                <label for="image-upload" id="image-label">{{ __('Pilih Berkas') }}</label>
+                                                <input type="file" name="gambar" id="image-upload"
+                                                    value="{{ $murid->gambar }}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mb-4">
+                                        <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3"></label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <button class="btn btn-primary" type="submit">{{ __('Simpan') }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </section>
+    </div>
+@endsection
+
+@push('scripts')
+    <!-- JS Libraies -->
+    <script src="{{ asset('library/summernote/dist/summernote-bs4.js') }}"></script>
+    <script src="{{ asset('library/codemirror/lib/codemirror.js') }}"></script>
+    <script src="{{ asset('library/codemirror/mode/javascript/javascript.js') }}"></script>
+    <script src="{{ asset('library/selectric/public/jquery.selectric.min.js') }}"></script>
+
+    <script src="{{ asset('library/upload-preview/upload-preview.js') }}"></script>
+
+    <!-- Page Specific JS File -->
+    <script src="{{ asset('js/page/features-post-create.js') }}"></script>
+
+    <!-- Page Specific JS File -->
+
+    <!-- Password Toggle Script -->
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const passwordIcon = document.getElementById('togglePasswordIcon');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        });
+    </script>
+@endpush
